@@ -1,5 +1,5 @@
 # Makefile
-# Build rules for EECS 280 project 2
+# Build rules for EECS 280 project 3
 
 # Compiler
 CXX ?= g++
@@ -7,77 +7,71 @@ CXX ?= g++
 # Compiler flags
 CXXFLAGS ?= --std=c++17 -Wall -Werror -pedantic -g -Wno-sign-compare -Wno-comment
 
-# Set the following to true to build with JPEG support
-USE_LIBJPEG ?=
-
-# If necessary, set the following to the location of your
-# libjpeg/libjpeg-turbo installation,
-# e.g. LIBJPEG_PATH ?= /opt/homebrew/Cellar/jpeg-turbo/3.0.2
-LIBJPEG_PATH ?=
-
-ifeq "$(strip $(USE_LIBJPEG))" "true"
-	export LIBJPEG_CXXFLAGS := -DJPEG_HPP_USE_LIBJPEG
-	export LIBJPEG_LDFLAGS := -ljpeg
-else
-	export LIBJPEG_CXXFLAGS :=
-	export LIBJPEG_LDFLAGS :=
-endif
-
-ifneq "$(LIBJPEG_PATH)" ""
-	export LIBJPEG_CXXFLAGS += -L"$(LIBJPEG_PATH)/lib" -I"$(LIBJPEG_PATH)/include"
-endif
-
 # Run a regression test
-test: Matrix_public_tests.exe Matrix_tests.exe Image_public_tests.exe Image_tests.exe processing_public_tests.exe resize.exe
-	./Matrix_public_tests.exe
-	./Image_public_tests.exe
-	./processing_public_tests.exe
-	./resize.exe dog.ppm dog_4x5.out.ppm 4 5
-	diff dog_4x5.out.ppm dog_4x5.correct.ppm
+test: Card_public_tests.exe Card_tests.exe Pack_public_tests.exe Pack_tests.exe \
+		Player_public_tests.exe Player_tests.exe \
+		euchre.exe
+	./Card_public_tests.exe
+	./Card_tests.exe
 
-Matrix_public_tests.exe: Matrix_public_tests.cpp Matrix.cpp Matrix_test_helpers.cpp
+	./Pack_public_tests.exe
+	./Pack_tests.exe
+
+	./Player_public_tests.exe
+	./Player_tests.exe
+
+	./euchre.exe pack.in noshuffle 1 Adi Simple Barbara Simple Chi-Chih Simple Dabbala Simple > euchre_test00.out
+	diff -qB euchre_test00.out euchre_test00.out.correct
+	./euchre.exe pack.in shuffle 10 Edsger Simple Fran Simple Gabriel Simple Herb Simple > euchre_test01.out
+	diff -qB euchre_test01.out euchre_test01.out.correct
+	./euchre.exe pack.in noshuffle 3 Ivan Human Judea Human Kunle Human Liskov Human < euchre_test50.in > euchre_test50.out
+	diff -qB euchre_test50.out euchre_test50.out.correct
+
+
+Card_public_tests.exe: Card.cpp Card_public_tests.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-Matrix_tests.exe: Matrix_tests.cpp Matrix.cpp Matrix_test_helpers.cpp
+Card_tests.exe: Card.cpp Card_tests.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-Image_public_tests.exe: Image_public_tests.cpp Matrix.cpp Image.cpp \
-			Matrix_test_helpers.cpp Image_test_helpers.cpp
+Pack_public_tests.exe: Card.cpp Pack.cpp Pack_public_tests.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-Image_tests.exe: Image_tests.cpp Matrix.cpp Image.cpp Matrix_test_helpers.cpp \
-			Image_test_helpers.cpp
+Pack_tests.exe: Card.cpp Pack.cpp Pack_tests.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-processing_public_tests.exe: processing_public_tests.cpp Matrix.cpp \
-				Image.cpp processing.cpp \
-				Matrix_test_helpers.cpp Image_test_helpers.cpp
+Player_public_tests.exe: Card.cpp Player.cpp Player_public_tests.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-resize.exe: resize.cpp Matrix.cpp Image.cpp processing.cpp
-	$(CXX) $(CXXFLAGS) $(LIBJPEG_CXXFLAGS) $^ $(LIBJPEG_LDFLAGS) -o $@
+Player_tests.exe: Card.cpp Player.cpp Player_tests.cpp
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
-# Disable built-in Makefile rules
+euchre.exe: Card.cpp Pack.cpp Player.cpp euchre.cpp
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
 .SUFFIXES:
 
-clean:
-	rm -rvf *.exe *.out.txt *.out.ppm *.dSYM *.stackdump
+.PHONY: clean
 
-# Run style check tools
+clean:
+	rm -rvf *.out *.exe *.dSYM *.stackdump
+
+# Style check
 CPD ?= /usr/um/pmd-6.0.1/bin/run.sh cpd
 OCLINT ?= /usr/um/oclint-22.02/bin/oclint
 FILES := \
-  Image.cpp \
-  Image_tests.cpp \
-  Matrix.cpp \
-  Matrix_tests.cpp \
-  processing.cpp \
-  resize.cpp
+  Card.cpp \
+  Card_tests.cpp \
+  Pack.cpp \
+  Pack_tests.cpp \
+  Player.cpp \
+  Player_tests.cpp \
+  euchre.cpp
 CPD_FILES := \
-  Image.cpp \
-  Matrix.cpp \
-  processing.cpp \
-  resize.cpp
+  Card.cpp \
+  Pack.cpp \
+  Player.cpp \
+  euchre.cpp
 style :
 	$(OCLINT) \
     -rule=LongLine \
