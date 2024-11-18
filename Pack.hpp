@@ -50,6 +50,9 @@ private:
   static const int PACK_SIZE = 24;
   std::array<Card, PACK_SIZE> cards;
   int next; //index of next card to be dealt
+
+  // EFFECTS: perform single in shuffle
+  void single_in_shuffle();
 };
 
 #endif // PACK_HPP
