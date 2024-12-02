@@ -146,11 +146,16 @@ std::istream & operator>>(std::istream &is, Card &card){
 }
 
 bool operator<(const Card &lhs, const Card &rhs){
+  if(lhs.get_rank() == rhs.get_rank()){
+    // suits in order of value
+    // DIAMONDS(3) > CLUBS(2) > HEARTS(1) > SPADES(0)
+    return lhs.get_suit() < rhs.get_suit();
+  }
   return lhs.get_rank() < rhs.get_rank();
 }
 
 bool operator==(const Card &lhs, const Card &rhs){
-  return lhs.get_rank() == rhs.get_rank();
+  return (lhs.get_rank() == rhs.get_rank()) && (lhs.get_suit() == rhs.get_suit());
 }
 
 bool operator<=(const Card &lhs, const Card &rhs){

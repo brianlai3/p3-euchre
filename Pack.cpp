@@ -29,6 +29,18 @@ void Pack::reset() {
 
 void Pack::single_in_shuffle(){
     std::array<Card, PACK_SIZE> old_cards = cards;
-    
+    for(int i = 0; i < PACK_SIZE/2; i++){
+        cards[2*i] = old_cards[PACK_SIZE/2 + i];
+        cards[2*i + 1] = old_cards[i];
+    }
 }
 
+void Pack::shuffle(){
+    for(int i = 0; i < 7; i++){
+        this->single_in_shuffle();
+    }
+}
+
+bool Pack::empty() const {
+    return next >= PACK_SIZE;
+}

@@ -56,7 +56,7 @@ TEST(test_simple_player_make_trump) {
   bob->add_card(Card(KING, SPADES));
   bob->add_card(Card(ACE, SPADES));
 
-  // Bob makes tump
+  // Bob makes trump
   Card nine_spades(NINE, SPADES);
   Suit trump;
   bool orderup = bob->make_trump(
